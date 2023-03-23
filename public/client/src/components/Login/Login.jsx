@@ -18,12 +18,23 @@ function Login() {
       e.preventDefault();
       Fauth.signInWithEmailAndPassword(email, password)
         .then((credential) => {
-          const { user } = credential;
-          console.log(user);
-          dispatch({
-            type: __UPDATE_HEADER_STATE__,
-            payload: true
-          });
+          // const {
+          //   user: { uid, displayName, email }
+          // } = credential;
+
+          // dispatch({
+          //   type: __UPDATE_SESSION__,
+          //   payload: {
+          //     uid,
+          //     displayName,
+          //     email
+          //   }
+          // });
+
+          // dispatch({
+          //   type: __UPDATE_HEADER_STATE__,
+          //   payload: true
+          // });
           history.push('/feed');
         })
         .catch((err) => {

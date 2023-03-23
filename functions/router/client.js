@@ -49,6 +49,41 @@ router.post("/user/new", (req, res, next) => {
     });
 });
 
+router.post("/feed/new", (req, res, next) => {
+  const { feed, profile, timestamp } = req.body;
+
+  const { uid } = profile;
+
+  Fdatabase.ref("feed")
+    .push({
+      feed,
+      profile,
+      timestamp,
+    })
+    .then((snapshot) => {
+      const fid = snapshot.key; //랜덤키 생성후 반환
+      Fdatabase.ref(`users/${uid}/feed`)
+        .push({
+          fid,
+        })
+        .then(() => {
+          res.status(200).json({
+            msg: "피드가 올라갔습니다.",
+          });
+        })
+        .catch((err) => {
+          res.status(400).json({
+            err,
+          });
+        }); // 유저가 본인 글을 가져올때 사용
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
 router.get("/helloworld", (req, res, next) => {
   res.json({
     msg: "helloworld",
