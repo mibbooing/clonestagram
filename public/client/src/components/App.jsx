@@ -10,12 +10,13 @@ import Detail from './Detail/Detail';
 import Profile from './Profile/Profile';
 import firebaseApp from '@config/firebaseApp';
 import { __NICKNAME_SERVICE_UPDATE__ } from '@dispatchers/config';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Fdatabase = firebaseApp.database();
 
 function App() {
   const dispatch = useDispatch();
+  const isHeaderOpen = useSelector((state) => state.layouts.isHeaderOpen);
   //닉네임 실시간 호출함수
   const __getNicknames = useCallback(() => {
     const nicknameRef = Fdatabase.ref('statics/nicknames');
@@ -46,7 +47,8 @@ function App() {
   }, [__getNicknames]);
   return (
     <Router>
-      <Header />
+      {isHeaderOpen && <Header />}
+
       <Switch>
         <Route path="/" exact component={Login} />
         <Route path="/join" exact component={Join} />
