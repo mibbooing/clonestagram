@@ -138,5 +138,6 @@
     "presets": [
       "react-app"
     ]
-  }
+  },
+  "proxy": "http://127.0.0.1:5001/clonestagram-p1/us-central1/clientApi"
 }
