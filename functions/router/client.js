@@ -126,6 +126,34 @@ router.post("/user/profile/quote", (req, res, next) => {
     });
 });
 
+router.post("/user/feed", (req, res, next) => {
+  const { uid } = req.body;
+
+  Fdatabase.ref("feed")
+    .orderByChild("profile/uid")
+    .equalTo(uid)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        const value = snapshot.val(); // 내가 쓴 글 목록
+        const feedlength = Object.keys(value).length;
+        res.status(200).json({
+          feed: Object.values(value),
+          msg: `피드가 ${feedlength}개 존재합니다.`,
+        });
+      } else {
+        res.status(200).json({
+          feed: [],
+          msg: "피드가 없습니다.",
+        });
+      }
+    })
+    .catch((err) => [
+      res.status(400).json({
+        err,
+      }),
+    ]);
+});
+
 router.get("/helloworld", (req, res, next) => {
   res.json({
     msg: "helloworld",

@@ -110,6 +110,9 @@ $class-101-white-200: #fafafa;
                   border-radius: 40px;
                   background-color: $class-101-gray;
                   margin-right: 12px;
+                  background-position: center;
+                  background-size: cover;
+                  background-repeat: no-repeat;
                 }
                 .profile-desc {
                   .nickname {

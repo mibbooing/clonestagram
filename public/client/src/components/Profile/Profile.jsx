@@ -1,6 +1,7 @@
 import firebaseApp from '@config/firebaseApp';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Feed from '../Feed/Feed';
 import './css/index.css';
 
 const Fdatabase = firebaseApp.database();
@@ -9,6 +10,7 @@ const Fstorage = firebaseApp.storage();
 function Profile() {
   const [userImage, setUserImage] = useState(undefined);
   const [quote, setQuote] = useState(undefined);
+  const [feeds, setFeeds] = useState([]);
   const session = useSelector((state) => state.auth.session);
 
   const __uploadImageUrlToDatabase = useCallback((uid, url) => {
@@ -137,11 +139,38 @@ function Profile() {
     }
   }, [session]);
 
+  const __getUserFeed = useCallback(() => {
+    if (session) {
+      const { uid } = session;
+      let url = '/user/feed';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Allow-Control-Access-Origin': '*'
+        },
+        body: JSON.stringify({
+          uid
+        })
+      })
+        .then((res) => res.json())
+        .then(({ feed, msg }) => {
+          console.log(msg);
+          setFeeds(feed.reverse());
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [session]);
+
   useEffect(() => {
+    __getUserFeed();
     __getUserProfileFromServer();
     __getUserQuoteFromServer();
     return () => {};
-  }, [__getUserProfileFromServer, __getUserQuoteFromServer]);
+  }, [__getUserFeed, __getUserProfileFromServer, __getUserQuoteFromServer]);
 
   return (
     <div className="profile">
@@ -227,180 +256,9 @@ function Profile() {
           <div className="feed-list">
             <div className="title txt-bold">작성한 글</div>
             <div className="feeds">
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                  <div className="image"></div>
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"></div>
-                  <div className="profile-desc">
-                    <div className="nickname text-bold">mibboo</div>
-                    <div className="timestamp">8:15 pm, yesterday</div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore obcaecati eveniet
-                  ullam, ipsam dolor libero officia veniam cumque est suscipit repudiandae. Autem
-                  aliquid laudantium nemo placeat vel est aspernatur temporibus.
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count text-bold">2k</div>
-                  </div>
-                </div>
-              </div>
+              {feeds.map((item, idx) => {
+                return <Feed key={idx} {...item} />;
+              })}
             </div>
           </div>
           <div className="profile-info-desc">

@@ -106,6 +106,9 @@
   border-radius: 40px;
   background-color: #e8e8e8;
   margin-right: 12px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 #root .profile .wrapper .profile-contents .feed-list .feeds .feed .top .profile-desc .nickname {
   font-size: 14px;
