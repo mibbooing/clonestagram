@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './css/index.css';
 
 function Header() {
@@ -13,9 +14,11 @@ function Header() {
             <li className="nav">
               <img src="/assets/header/feed-dac.svg" alt="피드로 가기" />
             </li>
-            <li className="nav">
-              <img src="/assets/header/profile-dac.svg" alt="프로필로 가기" />
-            </li>
+            <Link to="/profile">
+              <li className="nav">
+                <img src="/assets/header/profile-dac.svg" alt="프로필로 가기" />
+              </li>
+            </Link>
           </ul>
         </nav>
       </div>

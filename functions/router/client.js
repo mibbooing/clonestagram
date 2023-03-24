@@ -84,6 +84,48 @@ router.post("/feed/new", (req, res, next) => {
     });
 });
 
+router.post("/user/profile/image", (req, res, next) => {
+  const { uid } = req.body;
+  Fdatabase.ref(`users/${uid}/profile/image`)
+    .once("value", (snapshot) => {
+      if (snapshot.exists) {
+        res.status(200).json({
+          image: snapshot.val(),
+        });
+      } else {
+        res.status(200).json({
+          image: undefined,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
+router.post("/user/profile/quote", (req, res, next) => {
+  const { uid } = req.body;
+  Fdatabase.ref(`users/${uid}/profile/quote`)
+    .once("value", (snapshot) => {
+      if (snapshot.exists) {
+        res.status(200).json({
+          image: snapshot.val(),
+        });
+      } else {
+        res.status(200).json({
+          image: undefined,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
 router.get("/helloworld", (req, res, next) => {
   res.json({
     msg: "helloworld",

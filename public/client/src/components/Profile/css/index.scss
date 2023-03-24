@@ -25,8 +25,17 @@ $class-101-white-200: #fafafa;
           background-color: $class-101-gray;
           margin-right: 18px;
           flex-shrink: 0;
+          background-position: center;
+          background-size: cover;
+          background-repeat: no-repeat;
+          input {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+          }
         }
         .profile-desc {
+          flex: 1;
           .nickname {
             font-size: 16px;
             color: $class-101-black;
@@ -40,7 +49,7 @@ $class-101-white-200: #fafafa;
               border: none;
               resize: none;
               width: 100%;
-              height: 73px;
+              height: 43px;
               background-color: $class-101-white-200;
             }
           }
