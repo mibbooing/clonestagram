@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import '@styles/core.css';
 import Welcome from './Welcome/Welcome';
@@ -11,15 +11,70 @@ import Profile from './Profile/Profile';
 import firebaseApp from '@config/firebaseApp';
 import { __NICKNAME_SERVICE_UPDATE__ } from '@dispatchers/config';
 import { useDispatch, useSelector } from 'react-redux';
-import { __UPDATE_SESSION__ } from '@dispatchers/auth';
+import { __UPDATE_FOLLOWER__, __UPDATE_FOLLOWING__, __UPDATE_SESSION__ } from '@dispatchers/auth';
 import { __UPDATE_HEADER_STATE__ } from '@dispatchers/layout';
 
 const Fauth = firebaseApp.auth();
 const Fdatabase = firebaseApp.database();
 
 function App() {
+  const [uid, setUid] = useState(undefined);
   const dispatch = useDispatch();
   const isHeaderOpen = useSelector((state) => state.layouts.isHeaderOpen);
+
+  const __getFollowings = useCallback(() => {
+    if (uid) {
+      const followingRef = Fdatabase.ref(`users/${uid}/following`);
+
+      followingRef.on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          console.log(val);
+          dispatch({
+            type: __UPDATE_FOLLOWING__,
+            payload: Object.values(val)
+          });
+        } else {
+          console.log('팔로잉중인 유저가 없습니다.');
+          dispatch({
+            type: __UPDATE_FOLLOWING__,
+            payload: []
+          });
+        }
+      });
+
+      return followingRef;
+    } else {
+      return undefined;
+    }
+  }, [uid, dispatch]);
+
+  const __getFollowers = useCallback(() => {
+    if (uid) {
+      const followersRef = Fdatabase.ref(`users/${uid}/follower`);
+
+      followersRef.on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          dispatch({
+            type: __UPDATE_FOLLOWER__,
+            payload: Object.values(val)
+          });
+        } else {
+          console.log('팔로워가 없습니다.');
+          dispatch({
+            type: __UPDATE_FOLLOWER__,
+            payload: []
+          });
+        }
+      });
+
+      return followersRef;
+    } else {
+      return undefined;
+    }
+  }, [uid, dispatch]);
+
   //닉네임 실시간 호출함수
   const __getNicknames = useCallback(() => {
     const nicknameRef = Fdatabase.ref('statics/nicknames');
@@ -53,6 +108,8 @@ function App() {
     Fauth.onAuthStateChanged((users) => {
       if (users) {
         const { uid, displayName, email } = users;
+
+        setUid(uid);
         dispatch({
           type: __UPDATE_HEADER_STATE__,
           payload: true
@@ -66,6 +123,7 @@ function App() {
           }
         });
       } else {
+        setUid(undefined);
         dispatch({
           type: __UPDATE_SESSION__,
           payload: undefined
@@ -73,6 +131,20 @@ function App() {
       }
     });
   }, [dispatch]);
+
+  useEffect(() => {
+    const followersRef = __getFollowers();
+    const followingRef = __getFollowings();
+    return () => {
+      if (followersRef) {
+        followersRef.off();
+      }
+
+      if (followingRef) {
+        followingRef.off();
+      }
+    };
+  }, [__getFollowers, __getFollowings]);
   return (
     <Router>
       {isHeaderOpen && <Header />}

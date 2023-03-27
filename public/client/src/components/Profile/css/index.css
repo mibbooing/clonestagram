@@ -60,6 +60,33 @@
   color: #262626;
   font-size: 12px;
   margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#root .profile .wrapper .info .profile-desc .follow-btn:hover {
+  background-color: #5085e8;
+  color: white;
+  border: 0px;
+}
+#root .profile .wrapper .info .profile-desc .following-btn {
+  width: 100px;
+  height: 30px;
+  border-radius: 30px;
+  border: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #5085e8;
+}
+#root .profile .wrapper .info .profile-desc .following-btn:hover {
+  background-color: white;
+  color: #262626;
+  border: 1px solid #e8e8e8;
 }
 #root .profile .wrapper .feed-images {
   display: flex;

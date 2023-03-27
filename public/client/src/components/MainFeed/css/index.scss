@@ -155,12 +155,16 @@ $class-101-gray200: #454545;
             .friend {
               display: flex;
               align-items: center;
+              cursor: pointer;
               .profile-image {
                 width: 40px;
                 height: 40px;
                 border-radius: 40px;
                 background-color: $class-101-gray;
                 margin-right: 12px;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
               }
               .nickname {
                 font-size: 12px;
