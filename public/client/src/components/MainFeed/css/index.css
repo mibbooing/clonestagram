@@ -154,6 +154,7 @@
 #root .mainfeed .wrapper .friend-list .my-friends .friend-list-wrapper .friend {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 #root .mainfeed .wrapper .friend-list .my-friends .friend-list-wrapper .friend .profile-image {
   width: 40px;
@@ -161,6 +162,9 @@
   border-radius: 40px;
   background-color: #e8e8e8;
   margin-right: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 #root .mainfeed .wrapper .friend-list .my-friends .friend-list-wrapper .friend .nickname {
   font-size: 12px;

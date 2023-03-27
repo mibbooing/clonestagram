@@ -60,6 +60,33 @@
   color: #262626;
   font-size: 12px;
   margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#root .profile .wrapper .info .profile-desc .follow-btn:hover {
+  background-color: #5085e8;
+  color: white;
+  border: 0px;
+}
+#root .profile .wrapper .info .profile-desc .following-btn {
+  width: 100px;
+  height: 30px;
+  border-radius: 30px;
+  border: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #5085e8;
+}
+#root .profile .wrapper .info .profile-desc .following-btn:hover {
+  background-color: white;
+  color: #262626;
+  border: 1px solid #e8e8e8;
 }
 #root .profile .wrapper .feed-images {
   display: flex;
@@ -180,4 +207,35 @@
 #root .profile .wrapper .profile-contents .profile-info-desc .desc .count {
   text-align: right;
   font-size: 12px;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends {
+  margin-top: 14px;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends > .title {
+  font-size: 10px;
+  color: #454545;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends .friend-list-wrapper {
+  margin-top: 14px;
+  display: grid;
+  row-gap: 8px;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends .friend-list-wrapper .friend {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends .friend-list-wrapper .friend .profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  background-color: #e8e8e8;
+  margin-right: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+#root .profile .wrapper .profile-contents .profile-info-desc .my-friends .friend-list-wrapper .friend .nickname {
+  font-size: 12px;
+  color: #454545;
 }/*# sourceMappingURL=index.css.map */
