@@ -11,6 +11,7 @@ function Profile() {
   const [userImage, setUserImage] = useState(undefined);
   const [quote, setQuote] = useState(undefined);
   const [feeds, setFeeds] = useState([]);
+  const [likeCount, setLikeCount] = useState(0);
   const session = useSelector((state) => state.auth.session);
 
   const __uploadImageUrlToDatabase = useCallback((uid, url) => {
@@ -157,6 +158,13 @@ function Profile() {
         .then((res) => res.json())
         .then(({ feed, msg }) => {
           console.log(msg);
+          const totalLikeCount = feed.reduce((prev, next) => {
+            console.log(next.feed);
+
+            return prev + next.feed.like;
+          }, 0);
+          console.log(totalLikeCount);
+          setLikeCount(totalLikeCount);
           setFeeds(feed.reverse());
         })
         .catch((err) => {
@@ -208,48 +216,18 @@ function Profile() {
           </div>
         </div>
         <div className="feed-images">
-          <div className="feed-image">
-            <img
-              src="https://c4.wallpaperflare.com/wallpaper/108/140/869/digital-digital-art-artwork-fantasy-art-drawing-hd-wallpaper-thumb.jpg"
-              alt=""
-            />
-          </div>
-          <div className="feed-image">
-            <img src="https://images4.alphacoders.com/936/936378.jpg" alt="" />
-          </div>
-          <div className="feed-image">
-            <img
-              src="https://t4.ftcdn.net/jpg/05/21/18/03/360_F_521180377_2iAVJqBQSo3cgKaVp8vMBR8asrC61DoU.jpg"
-              alt=""
-            />
-          </div>
-          <div className="feed-image">
-            <img
-              src="https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832__340.jpg"
-              alt=""
-            />
-          </div>
-          <div className="feed-image">
-            <img
-              src="https://mobimg.b-cdn.net/v3/fetch/83/83b001d629f121eea6797b62cdcb4c68.jpeg"
-              alt=""
-            />
-          </div>
-          <div className="feed-image">
-            <img
-              src="https://img.freepik.com/free-photo/aesthetic-dark-wallpaper-background-neon-light_53876-128291.jpg?w=2000"
-              alt=""
-            />
-          </div>
-          <div className="feed-image">
-            <img src="https://www.wallpapershop.com.au/assets/marketing/69.png?1655705825" alt="" />
-          </div>
-          <div className="feed-image">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5fxfhww25ysyMkq_IELQsXvEtbPHIM_fHUQ&usqp=CAU"
-              alt=""
-            />
-          </div>
+          {feeds
+            .filter((i) => i.feed.image)
+            .map((item, idx) => {
+              const {
+                feed: { image }
+              } = item;
+              return (
+                <div className="feed-image" key={idx}>
+                  <img src={image} alt="피드 이미지" />
+                </div>
+              );
+            })}
         </div>
 
         <div className="profile-contents">
@@ -264,19 +242,19 @@ function Profile() {
           <div className="profile-info-desc">
             <div className="desc">
               <div className="title txt-bold">좋아요</div>
-              <div className="count">739,000</div>
+              <div className="count">{likeCount}</div>
             </div>
             <div className="desc">
               <div className="title txt-bold">팔로워</div>
-              <div className="count">2,539,000</div>
+              <div className="count">0</div>
             </div>
             <div className="desc">
               <div className="title txt-bold">포스트</div>
-              <div className="count">332</div>
+              <div className="count">{feeds.length}</div>
             </div>
             <div className="desc">
               <div className="title txt-bold">친구</div>
-              <div className="count">195,488</div>
+              <div className="count">0</div>
             </div>
           </div>
         </div>

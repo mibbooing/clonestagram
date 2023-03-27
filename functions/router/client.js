@@ -111,11 +111,11 @@ router.post("/user/profile/quote", (req, res, next) => {
     .once("value", (snapshot) => {
       if (snapshot.exists) {
         res.status(200).json({
-          image: snapshot.val(),
+          quote: snapshot.val(),
         });
       } else {
         res.status(200).json({
-          image: undefined,
+          quote: undefined,
         });
       }
     })
