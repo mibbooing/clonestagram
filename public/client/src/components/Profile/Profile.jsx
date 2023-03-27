@@ -1,6 +1,7 @@
 import firebaseApp from '@config/firebaseApp';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import Feed from '../Feed/Feed';
 import './css/index.css';
 
@@ -12,7 +13,12 @@ function Profile() {
   const [quote, setQuote] = useState(undefined);
   const [feeds, setFeeds] = useState([]);
   const [likeCount, setLikeCount] = useState(0);
+  const [recommandFriends, setRecommandFriends] = useState([]);
+  const [isMyProfile, setIsMyProfile] = useState(false);
   const session = useSelector((state) => state.auth.session);
+  const history = useHistory();
+  const param = useParams();
+  const location = useLocation();
 
   const __uploadImageUrlToDatabase = useCallback((uid, url) => {
     Fdatabase.ref(`users/${uid}/profile/image`)
@@ -88,11 +94,84 @@ function Profile() {
     [session, quote]
   );
 
-  const __getUserProfileFromServer = useCallback(() => {
+  const __getUserProfileFromServer = useCallback((uid) => {
+    let url = '/user/profile/image';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Allow-Control-Access-Origin': '*'
+      },
+      body: JSON.stringify({
+        uid
+      })
+    })
+      .then((res) => res.json())
+      .then(({ image }) => {
+        setUserImage(image);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const __getUserQuoteFromServer = useCallback((uid) => {
+    let url = '/user/profile/quote';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Allow-Control-Access-Origin': '*'
+      },
+      body: JSON.stringify({
+        uid
+      })
+    })
+      .then((res) => res.json())
+      .then(({ quote }) => {
+        setQuote(quote);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const __getUserFeed = useCallback((uid) => {
+    let url = '/user/feed';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Allow-Control-Access-Origin': '*'
+      },
+      body: JSON.stringify({
+        uid
+      })
+    })
+      .then((res) => res.json())
+      .then(({ feed, msg }) => {
+        // console.log(msg);
+        const totalLikeCount = feed.reduce((prev, next) => {
+          // console.log(next.feed);
+
+          return prev + next.feed.like;
+        }, 0);
+        // console.log(totalLikeCount);
+        setLikeCount(totalLikeCount);
+        setFeeds(feed.reverse());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const __getRecommandFriends = useCallback(() => {
     if (session) {
       const { uid } = session;
-
-      let url = '/user/profile/image';
+      let url = '/friends/recommand';
 
       fetch(url, {
         method: 'POST',
@@ -100,85 +179,73 @@ function Profile() {
           'Content-Type': 'application/json',
           'Allow-Control-Access-Origin': '*'
         },
-        body: JSON.stringify({
-          uid
-        })
+        body: JSON.stringify()
       })
-        .then((res) => res.json())
-        .then(({ image }) => {
-          setUserImage(image);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [session]);
-
-  const __getUserQuoteFromServer = useCallback(() => {
-    if (session) {
-      const { uid } = session;
-
-      let url = '/user/profile/quote';
-
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Allow-Control-Access-Origin': '*'
-        },
-        body: JSON.stringify({
-          uid
-        })
-      })
-        .then((res) => res.json())
-        .then(({ quote }) => {
-          setQuote(quote);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [session]);
-
-  const __getUserFeed = useCallback(() => {
-    if (session) {
-      const { uid } = session;
-      let url = '/user/feed';
-
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Allow-Control-Access-Origin': '*'
-        },
-        body: JSON.stringify({
-          uid
-        })
-      })
-        .then((res) => res.json())
-        .then(({ feed, msg }) => {
+        .then((res) =>
+          res.json({
+            uid
+          })
+        )
+        .then(({ friends, msg }) => {
+          setRecommandFriends(friends);
+          console.log(friends);
           console.log(msg);
-          const totalLikeCount = feed.reduce((prev, next) => {
-            console.log(next.feed);
-
-            return prev + next.feed.like;
-          }, 0);
-          console.log(totalLikeCount);
-          setLikeCount(totalLikeCount);
-          setFeeds(feed.reverse());
         })
         .catch((err) => {
           console.log(err);
         });
     }
   }, [session]);
+
+  const __classifyFriend = useCallback(() => {
+    const { uid } = param;
+    if (uid) {
+      setIsMyProfile(false);
+    } else {
+      setIsMyProfile(true);
+    }
+  }, [param]);
 
   useEffect(() => {
-    __getUserFeed();
-    __getUserProfileFromServer();
-    __getUserQuoteFromServer();
     return () => {};
-  }, [__getUserFeed, __getUserProfileFromServer, __getUserQuoteFromServer]);
+  }, [location]);
+
+  useEffect(() => {
+    __classifyFriend();
+    return () => {};
+  }, [__classifyFriend]);
+
+  useEffect(() => {
+    if (session) {
+      let uuid = '';
+      if (isMyProfile) {
+        const { uid } = session;
+        uuid = uid;
+        __getRecommandFriends();
+      } else {
+        const { uid } = param;
+        uuid = uid;
+      }
+      __getUserFeed(uuid);
+      __getUserProfileFromServer(uuid);
+      __getUserQuoteFromServer(uuid);
+    }
+
+    return () => {};
+  }, [
+    __getUserFeed,
+    __getUserProfileFromServer,
+    __getUserQuoteFromServer,
+    __getRecommandFriends,
+    isMyProfile,
+    session,
+    param
+  ]);
+
+  useEffect(() => {
+    console.log(param);
+    return () => {};
+  }, [param]);
 
   return (
     <div className="profile">
@@ -188,11 +255,17 @@ function Profile() {
             className="profile-image"
             style={userImage && { backgroundImage: `url(${userImage})` }}
           >
-            {true && <input type="file" onChange={__getImage} />}
+            {isMyProfile && <input type="file" onChange={__getImage} />}
           </div>
           <div className="profile-desc">
-            <div className="nickname txt-bold">{session ? session.displayName : 'mibboo'}</div>
-            {true ? (
+            {isMyProfile ? (
+              <div className="nickname txt-bold">{session ? session.displayName : 'mibboo'}</div>
+            ) : (
+              <div className="nickname txt-bold">
+                {location.state ? location.state.nickname : 'mibboo'}
+              </div>
+            )}
+            {isMyProfile ? (
               <form className="quote" onSubmit={__onSubmit}>
                 <textarea
                   defaultValue={quote}
@@ -205,11 +278,7 @@ function Profile() {
               </form>
             ) : (
               <>
-                <div className="quote">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta accusamus
-                  repudiandae ad beatae reiciendis nemo recusandae odio, id ipsam nihil tempora vero
-                  in quaerat pariatur doloremque. Minima culpa cumque iusto.
-                </div>
+                <div className="quote">{quote}</div>
                 <div className="follow-btn txt-bold">팔로우하기</div>
               </>
             )}
@@ -256,6 +325,37 @@ function Profile() {
               <div className="title txt-bold">친구</div>
               <div className="count">0</div>
             </div>
+
+            {isMyProfile && (
+              <div className="my-friends">
+                <div className="title txt-bold">추천친구</div>
+                <ul className="friend-list-wrapper">
+                  {recommandFriends.map((item, idx) => {
+                    const {
+                      uid,
+                      data: {
+                        profile: { image, nickname }
+                      }
+                    } = item;
+                    return (
+                      <li
+                        className="friend"
+                        key={idx}
+                        onClick={() => {
+                          history.push(`/profile/${uid}`, { nickname });
+                        }}
+                      >
+                        <div
+                          className="profile-image"
+                          style={image && { backgroundImage: `url(${image})` }}
+                        ></div>
+                        <div className="nickname txt-bold">{nickname}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

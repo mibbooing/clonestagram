@@ -8,7 +8,7 @@ function makeTwoDigits(time) {
 }
 
 function makeFeedTime(timestamp) {
-  console.log(timestamp);
+  // console.log(timestamp);
   const feedDate = new Date(timestamp);
   const nowDate = Date.now();
 

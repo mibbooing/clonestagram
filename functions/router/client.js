@@ -154,6 +154,43 @@ router.post("/user/feed", (req, res, next) => {
     ]);
 });
 
+router.post("/friends/recommand", (req, res, next) => {
+  const { uid } = req.body;
+
+  Fdatabase.ref("users")
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        const userValue = Object.values(val);
+        const objectToArr = Object.keys(val).map((item, idx) => {
+          return {
+            uid: item,
+            data: userValue[idx],
+          };
+        });
+
+        const exceptSelf = objectToArr.filter((i) => i.uid !== uid);
+
+        const exceptMyNode = exceptSelf;
+
+        res.status(200).json({
+          friends: exceptSelf,
+          msg: "추천친구를 불러왔습니다.",
+        });
+      } else {
+        res.status(200).json({
+          friends: [],
+          msg: "유저가 없습니다.",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
 router.get("/helloworld", (req, res, next) => {
   res.json({
     msg: "helloworld",
