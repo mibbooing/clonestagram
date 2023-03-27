@@ -20,6 +20,17 @@
   background-color: #e8e8e8;
   margin-right: 18px;
   flex-shrink: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+#root .profile .wrapper .info .profile-image input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+}
+#root .profile .wrapper .info .profile-desc {
+  flex: 1;
 }
 #root .profile .wrapper .info .profile-desc .nickname {
   font-size: 16px;
@@ -35,7 +46,7 @@
   border: none;
   resize: none;
   width: 100%;
-  height: 73px;
+  height: 43px;
   background-color: #fafafa;
 }
 #root .profile .wrapper .info .profile-desc .follow-btn {
@@ -95,6 +106,9 @@
   border-radius: 40px;
   background-color: #e8e8e8;
   margin-right: 12px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 #root .profile .wrapper .profile-contents .feed-list .feeds .feed .top .profile-desc .nickname {
   font-size: 14px;

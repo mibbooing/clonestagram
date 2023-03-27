@@ -1,4 +1,5 @@
 import firebaseApp from '@config/firebaseApp';
+import { __UPDATE_SESSION__ } from '@dispatchers/auth';
 import { __UPDATE_HEADER_STATE__ } from '@dispatchers/layout';
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,8 +19,19 @@ function Login() {
       e.preventDefault();
       Fauth.signInWithEmailAndPassword(email, password)
         .then((credential) => {
-          const { user } = credential;
-          console.log(user);
+          const {
+            user: { uid, displayName, email }
+          } = credential;
+
+          dispatch({
+            type: __UPDATE_SESSION__,
+            payload: {
+              uid,
+              displayName,
+              email
+            }
+          });
+
           dispatch({
             type: __UPDATE_HEADER_STATE__,
             payload: true

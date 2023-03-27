@@ -34,7 +34,7 @@
 #root .mainfeed .wrapper .feed-list .write-feed .inp input {
   width: 100%;
   font-size: 12px;
-  color: #e8e8e8;
+  color: #454545;
   border: none;
 }
 #root .mainfeed .wrapper .feed-list .write-feed .inp input::-moz-placeholder {

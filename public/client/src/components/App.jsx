@@ -11,7 +11,10 @@ import Profile from './Profile/Profile';
 import firebaseApp from '@config/firebaseApp';
 import { __NICKNAME_SERVICE_UPDATE__ } from '@dispatchers/config';
 import { useDispatch, useSelector } from 'react-redux';
+import { __UPDATE_SESSION__ } from '@dispatchers/auth';
+import { __UPDATE_HEADER_STATE__ } from '@dispatchers/layout';
 
+const Fauth = firebaseApp.auth();
 const Fdatabase = firebaseApp.database();
 
 function App() {
@@ -45,6 +48,31 @@ function App() {
       nicknameRef.off();
     };
   }, [__getNicknames]);
+
+  useEffect(() => {
+    Fauth.onAuthStateChanged((users) => {
+      if (users) {
+        const { uid, displayName, email } = users;
+        dispatch({
+          type: __UPDATE_HEADER_STATE__,
+          payload: true
+        });
+        dispatch({
+          type: __UPDATE_SESSION__,
+          payload: {
+            uid,
+            displayName,
+            email
+          }
+        });
+      } else {
+        dispatch({
+          type: __UPDATE_SESSION__,
+          payload: undefined
+        });
+      }
+    });
+  }, [dispatch]);
   return (
     <Router>
       {isHeaderOpen && <Header />}
