@@ -60,6 +60,7 @@ function Login() {
   }, []);
 
   useEffect(() => {
+    Fauth.signOut();
     dispatch({
       type: __UPDATE_HEADER_STATE__,
       payload: false
