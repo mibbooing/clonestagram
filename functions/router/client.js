@@ -50,9 +50,9 @@ router.post("/user/new", (req, res, next) => {
 });
 
 router.post("/feed/new", (req, res, next) => {
-  const { feed, profile, timestamp } = req.body;
+  const { feed, profile, timestamp, followers } = req.body;
 
-  const { uid } = profile;
+  const { uid: uuid } = profile;
 
   Fdatabase.ref("feed")
     .push({
@@ -62,10 +62,18 @@ router.post("/feed/new", (req, res, next) => {
     })
     .then((snapshot) => {
       const fid = snapshot.key; //랜덤키 생성후 반환
-      Fdatabase.ref(`users/${uid}/feed`)
-        .push({
+      Promise.all([
+        Fdatabase.ref(`users/${uuid}/feed`).push({
           fid,
-        })
+        }),
+        followers.forEach((item) => {
+          const { uid } = item;
+          Fdatabase.ref(`users/${uid}/feed`).push({
+            fid,
+          });
+        }),
+      ])
+
         .then(() => {
           res.status(200).json({
             msg: "피드가 올라갔습니다.",
@@ -76,6 +84,28 @@ router.post("/feed/new", (req, res, next) => {
             err,
           });
         }); // 유저가 본인 글을 가져올때 사용
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
+router.post("/feed/detail", (req, res, next) => {
+  const { fid } = req.body;
+
+  Fdatabase.ref(`feed/${fid}`)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        res.status(200).json({
+          data: snapshot.val(),
+        });
+      } else {
+        res.status(400).json({
+          msg: "데이터가 없습니다.",
+        });
+      }
     })
     .catch((err) => {
       res.status(400).json({
@@ -246,11 +276,15 @@ router.post("/friend/unfollow", (req, res, next) => {
     Fdatabase.ref(`users/${uid}/following`)
       .orderByChild("uid")
       .equalTo(fuid)
-      .ref.remove(),
+      .once("value", (snapshot) => {
+        snapshot.ref.child(Object.keys(snapshot.val())[0]).remove();
+      }),
     Fdatabase.ref(`users/${fuid}/follower`)
       .orderByChild("uid")
       .equalTo(uid)
-      .ref.remove(),
+      .once("value", (snapshot) => {
+        snapshot.ref.child(Object.keys(snapshot.val())[0]).remove();
+      }),
   ])
     .then(() => {
       res.status(200).json({

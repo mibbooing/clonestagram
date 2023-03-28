@@ -11,7 +11,12 @@ import Profile from './Profile/Profile';
 import firebaseApp from '@config/firebaseApp';
 import { __NICKNAME_SERVICE_UPDATE__ } from '@dispatchers/config';
 import { useDispatch, useSelector } from 'react-redux';
-import { __UPDATE_FOLLOWER__, __UPDATE_FOLLOWING__, __UPDATE_SESSION__ } from '@dispatchers/auth';
+import {
+  __UPDATE_FEEDS__,
+  __UPDATE_FOLLOWER__,
+  __UPDATE_FOLLOWING__,
+  __UPDATE_SESSION__
+} from '@dispatchers/auth';
 import { __UPDATE_HEADER_STATE__ } from '@dispatchers/layout';
 
 const Fauth = firebaseApp.auth();
@@ -96,6 +101,32 @@ function App() {
     return nicknameRef;
   }, [dispatch]);
 
+  const __getFeeds = useCallback(() => {
+    if (uid) {
+      const feedRef = Fdatabase.ref(`users/${uid}/feed`);
+
+      feedRef.on('value', (snapshot) => {
+        if (snapshot.exists()) {
+          console.log(snapshot.val());
+          dispatch({
+            type: __UPDATE_FEEDS__,
+            payload: Object.values(snapshot.val())
+              .map((item) => item.fid)
+              .reverse()
+          });
+        } else {
+          dispatch({
+            type: __UPDATE_FEEDS__,
+            payload: []
+          });
+        }
+      });
+      return feedRef;
+    } else {
+      return undefined;
+    }
+  }, [uid, dispatch]);
+
   //함수 활성화
   useEffect(() => {
     const nicknameRef = __getNicknames();
@@ -125,6 +156,10 @@ function App() {
       } else {
         setUid(undefined);
         dispatch({
+          type: __UPDATE_HEADER_STATE__,
+          payload: false
+        });
+        dispatch({
           type: __UPDATE_SESSION__,
           payload: undefined
         });
@@ -135,6 +170,7 @@ function App() {
   useEffect(() => {
     const followersRef = __getFollowers();
     const followingRef = __getFollowings();
+    const feedRef = __getFeeds();
     return () => {
       if (followersRef) {
         followersRef.off();
@@ -143,8 +179,12 @@ function App() {
       if (followingRef) {
         followingRef.off();
       }
+
+      if (feedRef) {
+        feedRef.off();
+      }
     };
-  }, [__getFollowers, __getFollowings]);
+  }, [__getFollowers, __getFollowings, __getFeeds]);
   return (
     <Router>
       {isHeaderOpen && <Header />}
