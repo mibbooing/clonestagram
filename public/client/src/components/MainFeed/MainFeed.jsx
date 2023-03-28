@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './css/index.css';
 import { useSelector } from 'react-redux';
 import firebaseApp from '@config/firebaseApp';
@@ -38,6 +38,7 @@ function MainFeed() {
   const following = useSelector((state) => state.auth.following);
   const followers = useSelector((state) => state.auth.followers);
   const feeds = useSelector((state) => state.auth.feeds);
+  const [userProfileImage, setUserProfileImage] = useState(undefined);
 
   const __makeFeed = useCallback(
     async (e) => {
@@ -96,18 +97,53 @@ function MainFeed() {
 
     reader.onload = (e) => {
       setFeed_image(e.target.result);
-      console.log(e.target.result);
+      // console.log(e.target.result);
     };
 
     reader.readAsDataURL(filelist);
   }, []);
+
+  const __getUserProfileImage = useCallback(() => {
+    if (session) {
+      const { uid } = session;
+
+      let url = '/user/profile/image';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Allow-Control-Access-Origin': '*'
+        },
+        body: JSON.stringify({
+          uid
+        })
+      })
+        .then((res) => res.json())
+        .then(({ image }) => {
+          setUserProfileImage(image);
+          console.log(image);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [session]);
+
+  useEffect(() => {
+    __getUserProfileImage();
+    return () => {};
+  }, [__getUserProfileImage]);
 
   return (
     <div className="mainfeed">
       <div className="wrapper">
         <div className="feed-list">
           <form className="write-feed" onSubmit={__makeFeed}>
-            <div className="profile-image"></div>
+            <div
+              className="profile-image"
+              style={userProfileImage && { backgroundImage: `url(${userProfileImage})` }}
+            ></div>
             <div className="inp">
               <input
                 ref={contextRef}
@@ -125,15 +161,18 @@ function MainFeed() {
           </form>
 
           {feeds.map((item, idx) => {
-            console.log(item);
+            // console.log(item);
             return <Feed fid={item} key={idx} />;
           })}
         </div>
 
         <div className="friend-list">
           <div className="my-profile">
-            <div className="profile-image"></div>
-            <div className="nickname txt-bold">Mibboo</div>
+            <div
+              className="profile-image"
+              style={userProfileImage && { backgroundImage: `url(${userProfileImage})` }}
+            ></div>
+            <div className="nickname txt-bold">{session && session.displayName}</div>
           </div>
           <div className="my-friends">
             <div className="title txt-bold">나의 친구</div>

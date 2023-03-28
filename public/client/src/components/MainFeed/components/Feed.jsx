@@ -1,5 +1,6 @@
+import { __UPDATE_DETAIL_DATA__, __UPDATE_DETAIL_STATE__ } from '@dispatchers/layout';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 const oneDay = 1000 * 60 * 60 * 24;
 
@@ -25,6 +26,7 @@ function makeFeedTime(timestamp) {
 }
 
 function Feed({ fid }) {
+  const dispatch = useDispatch();
   const [
     {
       feed: { like, comment, context, image },
@@ -46,6 +48,31 @@ function Feed({ fid }) {
   });
   const session = useSelector((state) => state.auth.session);
   const [userImage, setUserImage] = useState(undefined);
+  const [userNickname, setUserNickname] = useState(undefined);
+
+  const __getUserNickname = useCallback(() => {
+    if (uid) {
+      let url = '/user/profile/nickname';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Allow-Control-Access-Origin': '*'
+        },
+        body: JSON.stringify({
+          uid
+        })
+      })
+        .then((res) => res.json())
+        .then(({ nickname }) => {
+          setUserNickname(nickname);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [uid]);
 
   const __getUserProfileFromServer = useCallback(() => {
     if (uid) {
@@ -93,21 +120,48 @@ function Feed({ fid }) {
       });
   }, [fid]);
 
+  const __openFeedDetail = useCallback(() => {
+    const feedData = {
+      feed: {
+        like,
+        comment,
+        image,
+        context
+      },
+      profile: { uid, nickname: userNickname ? userNickname : '', image: userImage },
+      timestamp,
+      config: {
+        time: makeFeedTime(timestamp)
+      }
+    };
+
+    dispatch({
+      type: __UPDATE_DETAIL_DATA__,
+      payload: feedData
+    });
+
+    dispatch({
+      type: __UPDATE_DETAIL_STATE__,
+      payload: true
+    });
+  }, [dispatch, like, comment, image, context, uid, timestamp, userNickname, userImage]);
+
   useEffect(() => {
     __getData();
+    __getUserNickname();
     __getUserProfileFromServer();
     return () => {};
-  }, [__getUserProfileFromServer, __getData]);
+  }, [__getUserProfileFromServer, __getData, __getUserNickname]);
 
   return (
-    <div className="feed">
+    <div className="feed" onClick={__openFeedDetail}>
       <div className="top">
         <div
           className="profile-image"
           style={userImage && { backgroundImage: `url(${userImage})` }}
         ></div>
         <div className="profile-desc">
-          <div className="nickname text-bold">{session ? session.displayName : 'mibboo'}</div>
+          <div className="nickname text-bold">{userNickname ? userNickname : ''}</div>
           <div className="timestamp">{makeFeedTime(timestamp)}</div>
         </div>
       </div>

@@ -26,6 +26,7 @@ function App() {
   const [uid, setUid] = useState(undefined);
   const dispatch = useDispatch();
   const isHeaderOpen = useSelector((state) => state.layouts.isHeaderOpen);
+  const isDetailOpen = useSelector((state) => state.layouts.isDetailOpen);
 
   const __getFollowings = useCallback(() => {
     if (uid) {
@@ -196,7 +197,7 @@ function App() {
         <Route path="/profile" exact component={Profile} />+
         <Route path="/profile/:uid" exact component={Profile} />
       </Switch>
-      {false && <Detail />}
+      {isDetailOpen && <Detail />}
     </Router>
   );
 }
