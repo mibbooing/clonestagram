@@ -172,6 +172,7 @@
   margin-top: 6px;
   font-size: 10px;
   color: #5085e8;
+  cursor: pointer;
 }
 #root .feed-detail .wrapper .contents .feed-comments .comment-form .body {
   font-size: 12px;

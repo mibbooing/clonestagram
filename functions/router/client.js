@@ -298,6 +298,122 @@ router.post("/friend/unfollow", (req, res, next) => {
     });
 });
 
+router.post("/comment/load", (req, res, next) => {
+  const { fid } = req.body;
+
+  Fdatabase.ref(`feed/${fid}/feed/comment`)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+
+        res.status(200).json({
+          data: val,
+        });
+      } else {
+        res.status(200).json({
+          data: {},
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err,
+      });
+    });
+});
+
+router.post("/comment/new", (req, res, next) => {
+  const { fid, targetId, isToFeed, comment } = req.body;
+
+  if (isToFeed) {
+    Fdatabase.ref(`feed/${fid}/feed/comment`)
+      .push(comment)
+      .then(() => {
+        res.status(200).json({
+          msg: "댓글이 등록되었습니다.",
+        });
+      })
+      .catch((err) => {
+        res.status(400).json({
+          err,
+        });
+      });
+  } else {
+    Fdatabase.ref(`feed/${fid}/feed/comment/${targetId}/reply`)
+      .push(comment)
+      .then(() => {
+        res.status(200).json({
+          msg: "대댓글이 등록되었습니다.",
+        });
+      })
+      .catch((err) => {
+        res.status(400).json({
+          err,
+        });
+      });
+  }
+});
+
+router.post("/like/increase", (req, res, next) => {
+  const { fid, cid, targetId, type, like } = req.body;
+
+  if (type === "feed") {
+    Fdatabase.ref(`feed/${targetId}/feed/like`)
+      .set(like + 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 증가",
+        });
+      });
+  } else if (type === "comment") {
+    Fdatabase.ref(`feed/${fid}/feed/comment/${targetId}/like`)
+      .set(like + 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 증가",
+        });
+      });
+  } else {
+    Fdatabase.ref(`feed/${fid}/feed/comment/${cid}/reply/${targetId}/like`)
+      .set(like + 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 증가",
+        });
+      });
+  }
+});
+
+router.post("/like/decrease", (req, res, next) => {
+  const { fid, cid, targetId, type, like } = req.body;
+
+  if (type === "feed") {
+    Fdatabase.ref(`feed/${targetId}/feed/like`)
+      .set(like - 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 취소",
+        });
+      });
+  } else if (type === "comment") {
+    Fdatabase.ref(`feed/${fid}/feed/comment/${targetId}/like`)
+      .set(like - 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 취소",
+        });
+      });
+  } else {
+    Fdatabase.ref(`feed/${fid}/feed/comment/${cid}/reply/${targetId}/like`)
+      .set(like - 1)
+      .then(() => {
+        res.status(200).json({
+          msg: "좋아요 취소",
+        });
+      });
+  }
+});
+
 router.get("/helloworld", (req, res, next) => {
   res.json({
     msg: "helloworld",

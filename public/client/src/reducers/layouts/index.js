@@ -1,10 +1,22 @@
 const initialState = {
   isHeaderOpen: false,
   isDetailOpen: false,
-  detailData: undefined
+  detailData: undefined,
+  targetId: undefined,
+  isToFeed: false
 };
 const layouts = (state = initialState, { type, payload }) => {
   switch (type) {
+    case '@layouts/UPDATE_IS_COMMENT_TO_FEED':
+      return {
+        ...state,
+        isToFeed: payload
+      };
+    case '@layouts/UPDATE_COMMENT_TARGET':
+      return {
+        ...state,
+        targetId: payload
+      };
     case '@layouts/UPDATE_DETAIL_DATA':
       return {
         ...state,

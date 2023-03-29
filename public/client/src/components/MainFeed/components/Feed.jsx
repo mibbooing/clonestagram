@@ -132,7 +132,8 @@ function Feed({ fid }) {
       timestamp,
       config: {
         time: makeFeedTime(timestamp)
-      }
+      },
+      fid
     };
 
     dispatch({
@@ -144,7 +145,7 @@ function Feed({ fid }) {
       type: __UPDATE_DETAIL_STATE__,
       payload: true
     });
-  }, [dispatch, like, comment, image, context, uid, timestamp, userNickname, userImage]);
+  }, [dispatch, like, comment, image, context, uid, timestamp, userNickname, userImage, fid]);
 
   useEffect(() => {
     __getData();
@@ -180,7 +181,7 @@ function Feed({ fid }) {
           <div className="asset">
             <img src="/assets/feed/comment.svg" alt="댓글" />
           </div>
-          <div className="count text-bold">{comment ? 100 : 0}</div>
+          <div className="count text-bold">{comment ? Object.keys(comment).length : 0}</div>
         </div>
       </div>
     </div>
