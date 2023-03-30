@@ -3,6 +3,7 @@ $class-101-gray100: #9d9d9f;
 $class-101-gray200: #454545;
 $class-101-black: #262626;
 $class-101-white-200: #fafafa;
+$class-101-blue: #5085e8;
 
 #root {
   .profile {
@@ -25,8 +26,17 @@ $class-101-white-200: #fafafa;
           background-color: $class-101-gray;
           margin-right: 18px;
           flex-shrink: 0;
+          background-position: center;
+          background-size: cover;
+          background-repeat: no-repeat;
+          input {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+          }
         }
         .profile-desc {
+          flex: 1;
           .nickname {
             font-size: 16px;
             color: $class-101-black;
@@ -40,7 +50,7 @@ $class-101-white-200: #fafafa;
               border: none;
               resize: none;
               width: 100%;
-              height: 73px;
+              height: 43px;
               background-color: $class-101-white-200;
             }
           }
@@ -55,6 +65,36 @@ $class-101-white-200: #fafafa;
             color: $class-101-black;
             font-size: 12px;
             margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background-color: $class-101-blue;
+              color: white;
+              border: 0px;
+            }
+          }
+
+          .following-btn {
+            width: 100px;
+            height: 30px;
+            border-radius: 30px;
+            border: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: $class-101-blue;
+
+            &:hover {
+              background-color: white;
+              color: $class-101-black;
+              border: 1px solid $class-101-gray;
+            }
           }
         }
       }
@@ -101,6 +141,9 @@ $class-101-white-200: #fafafa;
                   border-radius: 40px;
                   background-color: $class-101-gray;
                   margin-right: 12px;
+                  background-position: center;
+                  background-size: cover;
+                  background-repeat: no-repeat;
                 }
                 .profile-desc {
                   .nickname {
@@ -174,6 +217,37 @@ $class-101-white-200: #fafafa;
             .count {
               text-align: right;
               font-size: 12px;
+            }
+          }
+          .my-friends {
+            margin-top: 14px;
+            & > .title {
+              font-size: 10px;
+              color: $class-101-gray200;
+            }
+            .friend-list-wrapper {
+              margin-top: 14px;
+              display: grid;
+              row-gap: 8px;
+              .friend {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                .profile-image {
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 40px;
+                  background-color: $class-101-gray;
+                  margin-right: 12px;
+                  background-repeat: no-repeat;
+                  background-position: center;
+                  background-size: cover;
+                }
+                .nickname {
+                  font-size: 12px;
+                  color: $class-101-gray200;
+                }
+              }
             }
           }
         }

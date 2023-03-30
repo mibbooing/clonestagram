@@ -1,4 +1,5 @@
 import firebaseApp from '@config/firebaseApp';
+import { __UPDATE_SESSION__ } from '@dispatchers/auth';
 import { __UPDATE_HEADER_STATE__ } from '@dispatchers/layout';
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,8 +19,19 @@ function Login() {
       e.preventDefault();
       Fauth.signInWithEmailAndPassword(email, password)
         .then((credential) => {
-          const { user } = credential;
-          console.log(user);
+          const {
+            user: { uid, displayName, email }
+          } = credential;
+
+          dispatch({
+            type: __UPDATE_SESSION__,
+            payload: {
+              uid,
+              displayName,
+              email
+            }
+          });
+
           dispatch({
             type: __UPDATE_HEADER_STATE__,
             payload: true
@@ -48,6 +60,7 @@ function Login() {
   }, []);
 
   useEffect(() => {
+    Fauth.signOut();
     dispatch({
       type: __UPDATE_HEADER_STATE__,
       payload: false
@@ -58,9 +71,9 @@ function Login() {
     <div className="login">
       <div className="wrapper">
         <div className="logo">
-          <img src="/assets/welcome/logo.svg" alt="logo" />
+          <img src="/assets/header/logo.svg" alt="logo" />
         </div>
-        <form className="login-contents" onSubmit={__doLogin}>
+        <form className="login-contents" onSubmit={__doLogin} name="loginform">
           <div className="email-inp custom-inp">
             <div className="title txt-bold">이메일</div>
             <div className="inp">
@@ -79,6 +92,7 @@ function Login() {
                 type="password"
                 placeholder="비밀번호를 입력해주세요"
                 onBlur={(e) => setPassword(e.target.value)}
+                onKeyPress={handleOnKeyPress}
                 required
               />
             </div>
