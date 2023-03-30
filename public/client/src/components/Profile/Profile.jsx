@@ -205,6 +205,8 @@ function Profile({
   const __getUserFeed = useCallback((uid) => {
     let url = '/user/feed';
 
+    console.log(uid);
+
     fetch(url, {
       method: 'POST',
       headers: {

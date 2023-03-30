@@ -7,7 +7,7 @@ function Header() {
     <div className="header">
       <div className="wrapper">
         <div className="logo">
-          <img src="/assets/welcome/logo.svg" alt="로고" />
+          <img src="/assets/header/logo.svg" alt="로고" />
         </div>
         <nav className="navigation">
           <ul className="nav-wrapper">

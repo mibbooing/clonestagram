@@ -60,6 +60,7 @@ function Login() {
   }, []);
 
   useEffect(() => {
+    Fauth.signOut();
     dispatch({
       type: __UPDATE_HEADER_STATE__,
       payload: false
@@ -70,9 +71,9 @@ function Login() {
     <div className="login">
       <div className="wrapper">
         <div className="logo">
-          <img src="/assets/welcome/logo.svg" alt="logo" />
+          <img src="/assets/header/logo.svg" alt="logo" />
         </div>
-        <form className="login-contents" onSubmit={__doLogin}>
+        <form className="login-contents" onSubmit={__doLogin} name="loginform">
           <div className="email-inp custom-inp">
             <div className="title txt-bold">이메일</div>
             <div className="inp">
@@ -91,6 +92,7 @@ function Login() {
                 type="password"
                 placeholder="비밀번호를 입력해주세요"
                 onBlur={(e) => setPassword(e.target.value)}
+                onKeyPress={handleOnKeyPress}
                 required
               />
             </div>

@@ -1,14 +1,26 @@
 const initialState = {
   session: undefined,
   following: [],
-  follower: []
+  followers: [],
+  feeds: [],
+  likelist: []
 };
 const auth = (state = initialState, { type, payload }) => {
   switch (type) {
+    case '@auth/LIKE_LIST':
+      return {
+        ...state,
+        likelist: [...payload]
+      };
+    case '@auth/FEEDS_UPDATE':
+      return {
+        ...state,
+        feeds: [...payload]
+      };
     case '@auth/FOLLOWER_UPDATE':
       return {
         ...state,
-        follower: [...payload]
+        followers: [...payload]
       };
     case '@auth/FOLLOWING_UPDATE':
       return {
