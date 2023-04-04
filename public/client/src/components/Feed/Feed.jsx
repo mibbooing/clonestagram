@@ -27,10 +27,35 @@ function makeFeedTime(timestamp) {
 function Feed({ feed: { like, comment, context, image }, profile: { uid }, timestamp }) {
   const session = useSelector((state) => state.auth.session);
   const [userImage, setUserImage] = useState(undefined);
+  const [userNickname, setUserNickname] = useState(undefined);
+
+  const __getUserNickname = useCallback(() => {
+    if (uid) {
+      let url = '/user/profile/nickname';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Allow-Control-Access-Origin': '*'
+        },
+        body: JSON.stringify({
+          uid
+        })
+      })
+        .then((res) => res.json())
+        .then(({ nickname }) => {
+          setUserNickname(nickname);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [uid]);
 
   const __getUserProfileFromServer = useCallback(() => {
     if (session) {
-      const { uid } = session;
+      // const { uid } = session;
 
       let url = '/user/profile/image';
 
@@ -56,8 +81,9 @@ function Feed({ feed: { like, comment, context, image }, profile: { uid }, times
 
   useEffect(() => {
     __getUserProfileFromServer();
+    __getUserNickname();
     return () => {};
-  }, [__getUserProfileFromServer]);
+  }, [__getUserProfileFromServer, __getUserNickname]);
 
   return (
     <div className="feed">
@@ -67,7 +93,7 @@ function Feed({ feed: { like, comment, context, image }, profile: { uid }, times
           style={userImage && { backgroundImage: `url(${userImage})` }}
         ></div>
         <div className="profile-desc">
-          <div className="nickname text-bold">{session ? session.displayName : 'mibboo'}</div>
+          <div className="nickname text-bold">{userNickname ? userNickname : 'mibboo'}</div>
           <div className="timestamp">{makeFeedTime(timestamp)}</div>
         </div>
       </div>
