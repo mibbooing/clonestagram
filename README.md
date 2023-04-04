@@ -15,6 +15,8 @@
 ### IDE
 - Visual Studio Code
 
+---
+
 링크 : https://clonestagram-p1.web.app/    
 테스트계정 : test12@test.com | 12341234
 
