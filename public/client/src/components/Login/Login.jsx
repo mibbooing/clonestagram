@@ -92,7 +92,6 @@ function Login() {
                 type="password"
                 placeholder="비밀번호를 입력해주세요"
                 onBlur={(e) => setPassword(e.target.value)}
-                onKeyPress={handleOnKeyPress}
                 required
               />
             </div>
